@@ -1,4 +1,4 @@
-# SSD (Single Shot MultiBox Detector) - Tensorflow 2.X with Inception v3
+# SSD (Single Shot MultiBox Detector) - Tensorflow 2.3.0 with Inception v3
 
 ## Preparation
 - Download PASCAL VOC dataset (2007 or 2012) and extract at `./data`
