@@ -19,9 +19,9 @@ parser.add_argument('--arch', default='ssd300')
 parser.add_argument('--batch-size', default=8, type=int)
 parser.add_argument('--num-batches', default=-1, type=int)
 parser.add_argument('--neg-ratio', default=3, type=int)
-parser.add_argument('--initial-lr', default=1e-3, type=float)
-parser.add_argument('--momentum', default=0.9, type=float)
-parser.add_argument('--weight-decay', default=5e-4, type=float)
+parser.add_argument('--initial-lr', default=1e-4, type=float)
+#parser.add_argument('--momentum', default=0.9, type=float)
+parser.add_argument('--weight-decay', default=5e-5, type=float)
 parser.add_argument('--num-epochs', default=100, type=int)
 parser.add_argument('--checkpoint-dir', default='checkpoints')
 parser.add_argument('--pretrained-type', default='base')
@@ -98,9 +98,11 @@ if __name__ == '__main__':
                     int(steps_per_epoch * args.num_epochs * 5 / 6)],
         values=[args.initial_lr, args.initial_lr * 0.1, args.initial_lr * 0.01])
     
-    optimizer = tf.keras.optimizers.SGD(
-        learning_rate=lr_fn,
-        momentum=args.momentum)
+#    optimizer = tf.keras.optimizers.SGD(
+#        learning_rate=lr_fn,
+#        momentum=args.momentum)
+    optimizer = tf.keras.optimizers.Adam(
+        learning_rate=lr_fn)
 
     train_log_dir = 'logs/train'
     val_log_dir = 'logs/val'
