@@ -69,9 +69,9 @@ class SSD(Model):
 
     ## WJ ##
     def create_inception_layers(self):
-        ## conv4
+        ## conv4 35
         base_model = InceptionV3(include_top=False, weights='imagenet', input_shape=(300, 300, 3))
-
+        
         conv4_block = [
                 tf.keras.models.Model(inputs=[base_model.input], outputs=[base_model.layers[228].output]),
                 tf.keras.layers.Conv2D(768, (1, 1), padding='same', name='Feature1')
@@ -83,10 +83,14 @@ class SSD(Model):
         for layer in conv4_block: out = layer(out)
         conv4_block = tf.keras.Model(x, out)
 
-        ## conv7
+        ## conv7 18
         conv7_block = [
-            tf.keras.layers.Conv2D(1024, (3, 3), padding='same', activation='relu', strides=2, name='Feature2_1'),
-            tf.keras.layers.Conv2D(1024, (3, 3), padding='same', activation='relu', name='Feature2_2')
+            tf.keras.layers.Conv2D(1024, (3, 3), padding='same', strides=2, name='Feature2_1'),
+            tf.keras.layers.BatchNormalization(),
+            tf.keras.layers.Activation('relu'),
+            tf.keras.layers.Conv2D(1024, (3, 3), padding='same', name='Feature2_2'),
+            tf.keras.layers.BatchNormalization(),
+            tf.keras.layers.Activation('relu')
         ]
 
         x = layers.Input(shape=[None, None, 768])
@@ -99,26 +103,45 @@ class SSD(Model):
 
     def create_inception_extra_layers(self):
         extra_layers = [
-            Sequential([tf.keras.layers.Conv2D(256, (1, 1), activation='relu', name='Feature3_1'),
-            tf.keras.layers.Conv2D(512, (3, 3), activation='relu', name='Feature3_2')]),
+            Sequential([tf.keras.layers.Conv2D(256, (1, 1), name='Feature3_1'), # 9
+            tf.keras.layers.BatchNormalization(),
+            tf.keras.layers.Activation('relu'),
+            tf.keras.layers.Conv2D(512, (3, 3), name='Feature3_2'),
+            tf.keras.layers.BatchNormalization(),
+            tf.keras.layers.Activation('relu')]),
 
-            Sequential([tf.keras.layers.Conv2D(128, (1, 1), activation='relu', name='Feature4_1'),
-            tf.keras.layers.Conv2D(256, (3, 3), activation='relu', name='Feature4_2')]),
+            Sequential([tf.keras.layers.Conv2D(128, (1, 1), name='Feature4_1'), # 5
+            tf.keras.layers.BatchNormalization(),
+            tf.keras.layers.Activation('relu'),
+            tf.keras.layers.Conv2D(256, (3, 3), name='Feature4_2'),
+            tf.keras.layers.BatchNormalization(),
+            tf.keras.layers.Activation('relu')
+            ]),
 
-            Sequential([tf.keras.layers.Conv2D(128, (1, 1), activation='relu', name='Feature5_1'),
-            tf.keras.layers.Conv2D(256, (3, 3), activation='relu', name='Feature5_2')]),
+            Sequential([tf.keras.layers.Conv2D(128, (1, 1), name='Feature5_1'), # 3
+            tf.keras.layers.BatchNormalization(),
+            tf.keras.layers.Activation('relu'),
+            tf.keras.layers.Conv2D(256, (3, 3), name='Feature5_2'),
+            tf.keras.layers.BatchNormalization(),
+            tf.keras.layers.Activation('relu')
+            ]),
 
-            Sequential([tf.keras.layers.Conv2D(128, (1, 1), activation='relu', name='Feature6_1'),
-            tf.keras.layers.Conv2D(256, (3, 3), activation='relu', name='Feature6_2')])
+            Sequential([tf.keras.layers.Conv2D(128, (1, 1),  name='Feature6_1'), # 1
+            tf.keras.layers.BatchNormalization(),
+            tf.keras.layers.Activation('relu'),
+            tf.keras.layers.Conv2D(256, (3, 3), name='Feature6_2'),
+            tf.keras.layers.BatchNormalization(),
+            tf.keras.layers.Activation('relu')
+            ])
         ]
         return extra_layers
 
     def create_inception_conf_head_layers(self, num_classes):
         conf_head_layers = [
-            layers.Conv2D(4*num_classes, kernel_size=3, padding='same'),  # for 4th block
+            layers.Conv2D(6*num_classes, kernel_size=3, padding='same'),  # for 4th block
             layers.Conv2D(6*num_classes, kernel_size=3, padding='same'),  # for 7th block
             layers.Conv2D(6*num_classes, kernel_size=3, padding='same'),  # for 8th block
-            layers.Conv2D(6*num_classes, kernel_size=3, padding='same'),  # for 9th block
+            layers.Conv2D(4*num_classes, kernel_size=3, padding='same'),  # for 9th block
             layers.Conv2D(4*num_classes, kernel_size=3, padding='same'),  # for 10th block
             layers.Conv2D(4*num_classes, kernel_size=3, padding='same')  # for 11th block
         ]
@@ -126,10 +149,10 @@ class SSD(Model):
 
     def create_inception_loc_head_layers(self):
         loc_head_layers = [
-            layers.Conv2D(4*4, kernel_size=3, padding='same'), # for 4th block
+            layers.Conv2D(6*4, kernel_size=3, padding='same'), # for 4th block
             layers.Conv2D(6*4, kernel_size=3, padding='same'), # for 7th block
             layers.Conv2D(6*4, kernel_size=3, padding='same'), # for 8th block
-            layers.Conv2D(6*4, kernel_size=3, padding='same'), # for 9th block
+            layers.Conv2D(4*4, kernel_size=3, padding='same'), # for 9th block
             layers.Conv2D(4*4, kernel_size=3, padding='same'), # for 10th block
             layers.Conv2D(4*4, kernel_size=3, padding='same') # for 11th block
         ]
