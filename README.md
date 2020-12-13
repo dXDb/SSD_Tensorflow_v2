@@ -65,7 +65,7 @@ python train.py --data-dir ./data/VOCdevkit --data-year 2012 --num-epochs 100
 - how to train Inception v3 using PASCAL VOC2012 for 100 epochs on GPU 1 with batch size 8 and save weights to `./checkpoints`:
 
 ```
-python train.py --data-dir ./data/VOCdevkit --data-year 2012 --arch ssd512 --num-epochs 100 --batch-size 8 --checkpoint_dir ./checkpoints --gpu-id 1
+python train.py --data-dir ./data/VOCdevkit --data-year 2012 --arch inception --num-epochs 100 --batch-size 8 --checkpoint_dir ./checkpoints --gpu-id 1
 ```
 
 ## Testing
